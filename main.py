@@ -1,8 +1,9 @@
+import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.ensemble import VotingClassifier
 from sklearn.linear_model import LogisticRegression, SGDClassifier
-from sklearn.metrics import classification_report,confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.neighbors import KNeighborsClassifier
@@ -16,19 +17,26 @@ data_set = LoadData().data_set
 x = data_set[['Pclass', 'SibSp', 'Parch', 'Fare', 'processed_age', 'labeled_Sex', 'labeled_cabin']]
 y = data_set['Survived']
 
+for feature in ["Pclass","SibSp", 'Parch', 'Fare', 'processed_age', 'labeled_Sex', 'labeled_cabin']:
+    plt.scatter(data_set[feature], data_set['Survived'])
+    plt.xlabel(feature)
+    plt.ylabel("Survived")
+    plt.show()
+
 X_train, X_test, y_train, y_test = train_test_split(x.values, y.values, test_size=0.3, random_state=0)
 
 names = ["K Nearest Neighbors", "Decision Tree", "Random Forest", "Logistic Regression", "SGD Classifier",
-         "Naive Bayes", "SVM Linear"]
+         "Naive Bayes", "SVM Linear","GB"]
 
 classifiers = [
     KNeighborsClassifier(),
     DecisionTreeClassifier(),
-    RandomForestClassifier(),
+    RandomForestClassifier(n_estimators=100),
     LogisticRegression(max_iter=1000),
     SGDClassifier(max_iter=100),
     MultinomialNB(),
-    SVC(kernel='linear')
+    SVC(kernel='linear'),
+    GradientBoostingClassifier(n_estimators=50)
 ]
 
 models = list(zip(names, classifiers))
@@ -46,8 +54,7 @@ for name, model in models:
     predictions_df["{} Predictions".format(name)] = prediction
 
     # Generate the accuracy score for the current model
-    score = model.score(X_test, y_test)
-    print("{} Score: {}".format(name, score))
+    print("{} Score: {}".format(name, model.score(X_test, y_test)))
 
     print(classification_report(y_test, prediction))
     print(confusion_matrix(y_test, prediction))

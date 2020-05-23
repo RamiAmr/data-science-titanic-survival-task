@@ -13,7 +13,18 @@ class LoadData:
 
     def proccess_columns(self):
         self.data_set['processed_age'] = self.data_set['Age'].fillna(self.data_set['Age'].median())
-        self.data_set['processed_cabin'] = self.data_set['Cabin'].fillna('sundeck')
+
+        self.data_set['processed_cabin'] = self.data_set['Cabin'].fillna('S') # S for sundeck
+
+        # Convert all cabin numbers to an ordinal categories
+        self.data_set['processed_cabin'] = self.data_set['processed_cabin'].apply(lambda x: ''.join(i.lower() for i in x if not i.isdigit()))
+
+        # handel duplicate cabins letters that where generated ex. B58 B60 -> b b -> b
+        self.data_set['processed_cabin'] = self.data_set['processed_cabin'].apply(lambda x: ''.join(set(x)))
+
+        # handel several cabin letters that where generated ex. B58 F60 -> b f -> f
+        self.data_set['processed_cabin'] = self.data_set['processed_cabin'].apply(lambda x: x[0])
+
         self.data_set['labeled_Sex'] = self.data_set['Sex'].apply(lambda x: 2 if x == 'male' else 1)
         enco = LabelEncoder()
         self.data_set['labeled_cabin'] = enco.fit_transform(self.data_set['processed_cabin'])
