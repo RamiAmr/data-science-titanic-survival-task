@@ -4,11 +4,10 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 
 class LoadData:
-    
-    data_set : object
-    
+    data_set: pd.DataFrame
+
     def __init__(self):
-        self.data_set = pd.read_csv(r'E:\DataScince\Projects\Titanic\data\train.csv')
+        self.data_set = pd.read_csv('./data/train.csv')
         self.data_set = self.proccess_columns()
 
 
